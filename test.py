@@ -56,8 +56,10 @@ param_grid = {"alpha": [1e0, 1e-1, 1e-2, 1e-3],
               "kernel": [ExpSineSquared(l, p)
                          for l in np.logspace(-2, 2, 10)
                          for p in np.logspace(0, 2, 10)]}
+t0 = time.time()                             
 krESS = GridSearchCV(KernelRidge(), cv=5, param_grid=param_grid)
 krESS.fit(X, y_sin)
+tGSKR = time.time() - t0
 y_testESS = krESS.predict(X_test)
 
 plt.figure()
@@ -90,9 +92,11 @@ plt.xlabel('$x$', fontsize=35)
 plt.ylabel('$y$', fontsize=35)
 plt.legend(fontsize=20)
 
+t0 = time.time()  
 gp_kernel = ExpSineSquared(1.0, 5.0, periodicity_bounds=(1e-2, 1e1)) + WhiteKernel(0.1)
 gpr = GaussianProcessRegressor(kernel=gp_kernel, n_restarts_optimizer=2)
 gpr.fit(X, y_sin)
+tGP = time.time() - t0
 y_testESS, y_GPstd = gpr.predict(X_test, return_std=True)
 
 plt.figure()
@@ -134,13 +138,15 @@ plt.legend(fontsize=20)
 
 #%%
 param_grid = {"epsilon": np.linspace(0.15, 0.2, 5),
-              "C": np.logspace(-1, 2, 9),
+              "C": np.logspace(0, 1, 4),
               "kernel": [ExpSineSquared(l, p)
                          for l in np.logspace(-2, 2, 10)
                          for p in np.logspace(0, 2, 10)]}
+t0 = time.time()                              
 svESS = GridSearchCV(SVR(), param_grid=param_grid)
 svESS.fit(X, y_sin) 
 y_testESS = svESS.predict(X_test)
+tGSSV = time.time() - t0 
 
 plt.figure()
 plt.plot(X, y_sin, 'r.', label='Data', markersize=7)
